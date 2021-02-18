@@ -1,0 +1,8 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Hello from Cloudflare Pages"
+theme = "yinyang"
+
+[params]
+headTitle = "Hello from Cloudflare Pages"
+mainSections = ["posts"]
