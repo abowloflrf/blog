@@ -1,5 +1,5 @@
 ---
-title: "clien-go 阅读 00 Informer 基本使用"
+title: "client-go 阅读 00 Informer 基本使用"
 slug: "client-go-00-informer-basic"
 tags: ["client-go"]
 date: 2021-07-10T20:36:16+08:00
