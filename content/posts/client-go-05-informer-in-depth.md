@@ -11,8 +11,6 @@ date: 2021-07-10T20:41:16+08:00
 
 ## informer 使用步骤
 
-![t7zuue](https://img.ruofeng.me/file/ruofengimg/uPic/t7zuue.png)
-
 -   初始化 informer
 -   添加 eventHandler
 -   开始运行 informer
