@@ -5,8 +5,6 @@ tags: ["client-go"]
 date: 2021-07-10T20:40:16+08:00
 ---
 
-# DeltaFIFO
-
 sharedInformer 在 `Run` 时，会新建此 DeltaFIFO 队列作为 Reflector 的本地存储结构
 
 ```go

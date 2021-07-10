@@ -5,8 +5,6 @@ tags: ["client-go"]
 date: 2021-07-10T20:41:16+08:00
 ---
 
-# informer
-
 参考：https://github.com/kubernetes/sample-controller/blob/master/docs/controller-client-go.md
 
 ## informer 使用步骤
