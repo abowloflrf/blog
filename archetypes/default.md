@@ -1,6 +1,7 @@
 ---
-title: "{{ replace .Name "-" " " | title }}"
-date: {{ .Date }}
+title: "{{ .Name }}"
+slug: "{{ .Name | urlize }}"
+tags: []
+date: "{{ .Date }}"
 draft: true
 ---
-
