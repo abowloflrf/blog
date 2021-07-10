@@ -2,8 +2,10 @@
 set -ex
 mkdir -p bin
 cd bin
-wget https://github.com/gohugoio/hugo/releases/download/v0.80.0/hugo_0.80.0_Linux-64bit.tar.gz
-tar -xvzf ./hugo_0.80.0_Linux-64bit.tar.gz
+
+HUGO_VERSION=0.85.0
+wget https://github.com/gohugoio/hugo/releases/download/v$(HUGO_VERSION)/hugo_$(HUGO_VERSION)_Linux-64bit.tar.gz -O hugo.tar.gz
+tar -xvzf ./hugo.tar.gz
 
 ./hugo version
 cd ..

@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://pages.ruofeng.me/"
 languageCode = "en-us"
 title = "Hello from Cloudflare Pages"
 theme = "yinyang"
