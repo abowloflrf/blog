@@ -9,7 +9,7 @@ date: 2021-07-10T20:36:16+08:00
 
 ## 0. 构造 clientset
 
-构造 clientset 数据使用 `client-go` 的基础内容，此处不在赘述
+构造 clientset 数据为使用 `client-go` 的基础内容，此处不再赘述
 
 ## 1. 初始化 informerFactory
 
@@ -38,6 +38,8 @@ podInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
     },
 })
 ```
+
+对目标资源的不通变化做出的相应的处理，一般而言会将变化的对象保存在一个 workqueue 中，之后再启动指定数量的 worker，循环从这个 workqueue 中消费内容并做出逻辑处理。
 
 ## 4. 开始运行 informer
 
