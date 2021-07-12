@@ -21,6 +21,7 @@ type threadSafeMap struct {
 	indexers Indexers
     // 索引数据
 	indices Indices
+}
 ```
 
 如下图所示：
