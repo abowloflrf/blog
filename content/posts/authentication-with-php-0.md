@@ -1,8 +1,8 @@
 ---
-title: "实现账号登陆认证 0 - 开始使用 Slim"
+title: "PHP 实现账号登陆认证 0 - 开始使用 Slim"
 slug: "authentication-with-php-0"
 tags: ["PHP"]
-date: "2018-03-03T16:52:57+08:00"
+date: "2018-03-03T10:52:57+08:00"
 ---
 
 # 0-开始使用 Slim

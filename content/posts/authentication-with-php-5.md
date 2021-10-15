@@ -2,7 +2,7 @@
 title: "PHP 实现账号登陆认证 5 - 添加 CSRF 保护"
 slug: "authentication-with-php-5"
 tags: ["PHP"]
-date: "2018-03-04T16:53:12+08:00"
+date: "2018-03-04T15:53:12+08:00"
 ---
 
 CSRF(Cross-site request forgery)跨站请求伪造，是一种挟制用户在当前已登录的 Web 应用程序上执行非本意的操作的攻击方法。

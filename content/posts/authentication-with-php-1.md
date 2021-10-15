@@ -1,8 +1,8 @@
 ---
-title: "实现账号登陆认证 1 - 使用 Eloquent ORM 与 Twig"
+title: "PHP 实现账号登陆认证 1 - 使用 Eloquent ORM 与 Twig"
 slug: "authentication-with-php-1"
 tags: ["PHP"]
-date: "2018-03-03T16:52:57+08:00"
+date: "2018-03-03T11:52:57+08:00"
 ---
 
 为了方便后面的开发，以及减少一些不必要的麻烦，我们集成两个实用的组件，分别是**Eloquent ORM**与**Twig**，作用分别是方便访问数据库与视图模板编写。使用过 Laravel 的朋友应该对 Eloquent ORM 十分熟悉，使用起来也是十分方便的。接下来在 Slim 中集成 Laravel 的 Eloquent ORM 来访问数据库，以及 Twig 模板扩展。
