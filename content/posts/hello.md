@@ -1,7 +1,8 @@
 ---
-title: "Hello"
+title: "Hello, World"
+slug: "hello"
 date: 2021-02-18T10:58:43+08:00
-tags: ["hello"]
+tags: ["hello", "测试"]
 ---
 
 ## From the other side
@@ -12,10 +13,34 @@ Post an `image` here
 
 ## And some code
 
+有语法高亮
+
 ```go
 import "fmt"
 
 func main() {
     fmt.Println("HELLO")
+}
+```
+
+有语法高亮+行数
+
+```go {linenos=table,hl_lines=[2,"4-6"]}
+import "fmt"
+
+func main() {
+    fmt.Println("HELLO")
+    os.Exit(0)
+}
+```
+
+plaintext
+
+```
+import "fmt"
+
+func main() {
+    fmt.Println("HELLO")
+    os.Exit(0)
 }
 ```
