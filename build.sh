@@ -11,4 +11,4 @@ tar -xvzf ./hugo.tar.gz
 ./hugo version
 cd ..
 
-./bin/hugo -D
+./bin/hugo
