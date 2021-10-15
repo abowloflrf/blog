@@ -1,7 +1,7 @@
 ---
 title: "Hello, World"
 slug: "hello"
-date: 2021-02-18T10:58:43+08:00
+date: 1997-08-29T00:00:00+08:00
 tags: ["hello", "测试"]
 ---
 
