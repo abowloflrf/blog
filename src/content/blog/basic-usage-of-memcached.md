@@ -16,8 +16,8 @@ description: ""
 
 在 PHP 中使用 Memcached 有两种方式：
 
--   [memcached](https://secure.php.net/manual/zh/class.memcached.php) 使用 libmemcached 实现，支持操作多性能高
--   [memcache](https://secure.php.net/manual/zh/book.memcache.php) 使用纯 PHP 实现，最初的 PHP 操作 memcached 扩展
+- [memcached](https://secure.php.net/manual/zh/class.memcached.php) 使用 libmemcached 实现，支持操作多性能高
+- [memcache](https://secure.php.net/manual/zh/book.memcache.php) 使用纯 PHP 实现，最初的 PHP 操作 memcached 扩展
 
 这里直接使用 C 语言实现的 PHP 扩展 php-memcached，为了方便直接只用包管理工具安装：
 
@@ -52,10 +52,10 @@ $container['memcached'] = function ($container) {
 最初实现的短链接跳转中，是很直接的读取到路由中的参数然后将这个参数在 MySQL 中查询对应的完整链接返回然后跳转，现在加入缓存机制后，首先是在 Memcached 中查询短链接对应的缓存是否存在，若存在则直接读取数据并返回跳转即可，若不存在则在 MySQL 中查询，得到完整链接后，将这条记录种在 Memcached 中，再返回响应。
 
 ```php
-    //使用Mamcached作为缓存
+    //使用 Mamcached 作为缓存
     public function redirect(Request $request, Response $response, array $args)
     {
-        //短域名格式不匹配，返回404
+        //短域名格式不匹配，返回 404
         if (!preg_match('/^[a-zA-Z0-9]{6}$/', $args['url'])) {
             return $response->withStatus(404)
                 ->withHeader('Content-Type', 'text/html')
@@ -84,11 +84,11 @@ $container['memcached'] = function ($container) {
 
 ## 对比压测
 
-我同时保留了一个不读取缓存的路由`/s/URL_S`，来与加入缓存后进行对比测试:
+我同时保留了一个不读取缓存的路由`/s/URL_S`，来与加入缓存后进行对比测试：
 
--   ab -n1000 http://127.0.0.1:8080/mN8r9q
+- ab -n1000 http://127.0.0.1:8080/mN8r9q
 
-```plain
+```plaintext
 Concurrency Level:      1
 Time taken for tests:   2.388 seconds
 Complete requests:      1000
@@ -120,9 +120,9 @@ Percentage of the requests served within a certain time (ms)
  100%     30 (longest request)
 ```
 
--   ab -n1000 http://127.0.0.1:8080/s/mN8r9q
+- ab -n1000 http://127.0.0.1:8080/s/mN8r9q
 
-```plain
+```plaintext
 Concurrency Level:      1
 Time taken for tests:   3.537 seconds
 Complete requests:      1000

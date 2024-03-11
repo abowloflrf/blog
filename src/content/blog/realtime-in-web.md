@@ -99,26 +99,26 @@ async def feed(req, ws):
 浏览器客户端中的使用也很方便，new 一个原生的 `Websocket` 类然后传入几个 on 事件的函数即可：
 
 ```javascript
-//点击按钮与服务端建立Websocket连接
+//点击按钮与服务端建立 Websocket 连接
 document.getElementById("btn-ws").onclick = () => {
-    var loc = window.location;
-    var ws_protocol = loc.protocol === "https" ? "wss://" : "ws://";
-    var ws = new WebSocket(ws_protocol + loc.host + "/websocket");
-    ws.onopen = (ev) => {
-        console.log("Websocket open");
-    };
-    ws.onclose = (ev) => {
-        console.log("Websocket close");
-    };
-    ws.onmessage = (ev) => {
-        console.log(ev.data);
-    };
+  var loc = window.location;
+  var ws_protocol = loc.protocol === "https" ? "wss://" : "ws://";
+  var ws = new WebSocket(ws_protocol + loc.host + "/websocket");
+  ws.onopen = ev => {
+    console.log("Websocket open");
+  };
+  ws.onclose = ev => {
+    console.log("Websocket close");
+  };
+  ws.onmessage = ev => {
+    console.log(ev.data);
+  };
 };
 ```
 
 使用 Chrome 开发者工具可直观看到 Websocket 的数据传输情况：
 
-<img src="https://cdn.nlark.com/yuque/0/2019/png/110142/1556295570122-8e3fa857-1cf5-4dba-ad02-1203a3e8a607.png#align=left&display=inline&height=473&name=image.png&originHeight=946&originWidth=1092&size=161784&status=done&width=546" referrerpolicy="no-referrer">
+<img alt="websocket" src="https://cdn.nlark.com/yuque/0/2019/png/110142/1556295570122-8e3fa857-1cf5-4dba-ad02-1203a3e8a607.png#align=left&display=inline&height=473&name=image.png&originHeight=946&originWidth=1092&size=161784&status=done&width=546" referrerpolicy="no-referrer">
 
 ## SSE(Server-Send-Events)
 
@@ -143,7 +143,7 @@ async def sse_handler(req):
 
     def sse_data(data: str, event: str = None, id: int = None) -> str:
         """
-        组装sse信息
+        组装 sse 信息
         """
         resp = "data: %s\n\n" % data
         if event is not None and event != "":
@@ -165,23 +165,23 @@ async def sse_handler(req):
 
 ```javascript
 var source = new EventSource("/sse");
-source.onopen = (e) => {
-    // Event type=open
-    console.log("SSE open");
+source.onopen = e => {
+  // Event type=open
+  console.log("SSE open");
 };
-source.onerror = (e) => {
-    // Event type=error
-    console.log("SSE error");
+source.onerror = e => {
+  // Event type=error
+  console.log("SSE error");
 };
-source.onmessage = (e) => {
-    // MessageEvent type=message
-    console.log("SSE message: " + e.data);
+source.onmessage = e => {
+  // MessageEvent type=message
+  console.log("SSE message: " + e.data);
 };
 ```
 
 使用 Chrome 开发者工具观察 SSE 请求：
 
-<img src="https://cdn.nlark.com/yuque/0/2019/png/110142/1556295615852-e1da3f52-c1e8-4b2e-b992-f15ef4b6ae91.png#align=left&display=inline&height=473&name=image.png&originHeight=946&originWidth=1060&size=111514&status=done&width=530" referrerpolicy="no-referrer">
+<img alt="sse" src="https://cdn.nlark.com/yuque/0/2019/png/110142/1556295615852-e1da3f52-c1e8-4b2e-b992-f15ef4b6ae91.png#align=left&display=inline&height=473&name=image.png&originHeight=946&originWidth=1060&size=111514&status=done&width=530" referrerpolicy="no-referrer">
 
 因为它从原理上比 Websocket 要简单一些，因此若是只需要服务端推送数据的场景，比如上面所说的实时获取一些日志，使用 SSE 也是一种可选的方案。
 
@@ -189,7 +189,7 @@ source.onmessage = (e) => {
 
 有一个比较直观易懂的网络请求时序图去对比了解其中几种方式的原理：
 
-<img src="https://cdn.nlark.com/yuque/0/2019/png/110142/1556296076171-ffc00850-9eee-498d-9760-1d9952f75b90.png#align=left&display=inline&height=385&name=image.png&originHeight=769&originWidth=1059&size=89897&status=done&width=529.5" referrerpolicy="no-referrer">
+<img alt="Sequence Diagram" src="https://cdn.nlark.com/yuque/0/2019/png/110142/1556296076171-ffc00850-9eee-498d-9760-1d9952f75b90.png#align=left&display=inline&height=385&name=image.png&originHeight=769&originWidth=1059&size=89897&status=done&width=529.5" referrerpolicy="no-referrer">
 
 ## 参考
 

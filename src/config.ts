@@ -1,13 +1,15 @@
 import type { Site, SocialObjects } from "./types";
 
+const website: string = process.env.MY_SITE ?? "https://ruofeng.me";
+
 export const SITE: Site = {
-  website: "https://ruofeng.me", // replace this with your deployed domain
+  website: website, // replace this with your deployed domain
   author: "Ruofeng Lei",
-  desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
+  desc: "The place I write.",
   title: "Ruofeng's Blog",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
-  postPerPage: 10,
+  postPerPage: 20,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
 };
 

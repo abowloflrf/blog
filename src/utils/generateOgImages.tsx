@@ -3,15 +3,16 @@ import { Resvg } from "@resvg/resvg-js";
 import { type CollectionEntry } from "astro:content";
 import postOgImage from "./og-templates/post";
 import siteOgImage from "./og-templates/site";
+import { promises as fs } from "fs";
 
-const fetchFonts = async () => {
-  const fontFileSmiley = await fetch("https://x.lrf.pw/SmileySans-Oblique.ttf");
-  const fontSmiley: ArrayBuffer = await fontFileSmiley.arrayBuffer();
+// const fetchFonts = async () => {
+//   const fontFileSmiley = await fetch("https://x.lrf.pw/SmileySans-Oblique.ttf");
+//   const fontSmiley: ArrayBuffer = await fontFileSmiley.arrayBuffer();
 
-  return { fontSmiley };
-};
+//   return { fontSmiley };
+// };
 
-const { fontSmiley } = await fetchFonts();
+const fontSmiley = await fs.readFile("./public/fonts/SmileySans-Oblique.ttf");
 
 const options: SatoriOptions = {
   width: 1200,

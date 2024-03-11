@@ -1,6 +1,6 @@
 ---
 author: Ruofeng Lei
-slug: 2018-02-09-design-pattern-facade
+slug: design-pattern-facade
 pubDatetime: 2018-02-09T17:15:35.000+08:00
 title: 设计模式之外观模式 Facade
 featured: false
