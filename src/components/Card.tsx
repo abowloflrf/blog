@@ -9,7 +9,7 @@ export interface Props {
 }
 
 export default function Card({ href, frontmatter, secHeading = true }: Props) {
-  const { title, pubDatetime, modDatetime, description } = frontmatter;
+  const { title, pubDatetime, modDatetime, description, tags } = frontmatter;
 
   const headerProps = {
     style: { viewTransitionName: slugifyStr(title) },
@@ -28,6 +28,21 @@ export default function Card({ href, frontmatter, secHeading = true }: Props) {
           <h3 {...headerProps}>{title}</h3>
         )}
       </a>
+      <ul className="">
+        {tags.map(tag => (
+          <li
+            key={tag}
+            className="my-0.5 inline-block decoration-dashed hover:underline"
+          >
+            <a
+              href={`/tags/${slugifyStr(tag)}/`}
+              className="group pr-2 text-sm"
+            >
+              <span># {tag}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
       <Datetime pubDatetime={pubDatetime} modDatetime={modDatetime} />
       <p>{description}</p>
     </li>

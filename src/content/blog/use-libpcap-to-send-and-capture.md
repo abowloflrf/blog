@@ -10,9 +10,9 @@ description: ""
 
 ## 使用环境
 
--   Ubuntu 17.10
--   GCC 7.2
--   libcap
+- Ubuntu 17.10
+- GCC 7.2
+- libcap
 
 ## 网络设备
 
@@ -107,7 +107,7 @@ if (!pcap) {
 }
 ```
 
-将填充好的整个请求帧(frame)写入接口完成发包：
+将填充好的整个请求帧 (frame) 写入接口完成发包：
 
 ```c
 pcap_inject(pcap, frame, sizeof(frame))
@@ -149,23 +149,23 @@ void capture()
         fprintf(stderr, "Couldn't open device %s: %s\n", dev->name, errbuf);
         exit(0);
     }
-    //pcap_compile:将过滤表达式编译打包成可用的过滤程序，并输出到fp
-    //参数：0-pcap实例，1-保存pcap过滤程序的结构体指针，2-过滤表达式字符串，3-是否优化，4-掩码，若不进行广播操作可设置为未知
+    //pcap_compile:将过滤表达式编译打包成可用的过滤程序，并输出到 fp
+    //参数：0-pcap 实例，1-保存 pcap 过滤程序的结构体指针，2-过滤表达式字符串，3-是否优化，4-掩码，若不进行广播操作可设置为未知
     if (pcap_compile(pcap, &fp, filter_exp, 0, PCAP_NETMASK_UNKNOWN) == -1) {
         fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(pcap));
         exit(0);
     }
-    //pcap_setfilter:为pcap实例设置一个编译好的过滤程序
-    //参数：0-pcap实例，1-保存pcap过滤程序的结构体指针
+    //pcap_setfilter:为 pcap 实例设置一个编译好的过滤程序
+    //参数：0-pcap 实例，1-保存 pcap 过滤程序的结构体指针
     if (pcap_setfilter(pcap, &fp) == -1) {
         fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(pcap));
         exit(0);
     }
 
-    //循环抓取10个包，got_packet为回调函数，printer为解析包进行可读输出的一个回调，这里不进行展开
+    //循环抓取 10 个包，got_packet 为回调函数，printer 为解析包进行可读输出的一个回调，这里不进行展开
     pcap_loop(pcap, 10, printer, NULL);
 
-    //关闭pcap停止抓包并退出
+    //关闭 pcap 停止抓包并退出
     pcap_freecode(&fp);
     pcap_close(pcap);
 }
