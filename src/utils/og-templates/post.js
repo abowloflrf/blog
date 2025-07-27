@@ -1,7 +1,9 @@
 import satori from "satori";
 // import { html } from "satori-html";
 import { SITE } from "@/config";
-import loadGoogleFonts from "../loadGoogleFont";
+import { promises as fs } from "fs";
+
+const fontSmiley = await fs.readFile("./public/fonts/SmileySans-Oblique.ttf");
 
 // const markup = html`<div
 //       style={{
@@ -221,9 +223,17 @@ export default async post => {
       width: 1200,
       height: 630,
       embedFont: true,
-      fonts: await loadGoogleFonts(
-        post.data.title + post.data.author + SITE.title + "by"
-      ),
+      // fonts: await loadGoogleFonts(
+      //   post.data.title + post.data.author + SITE.title + "by"
+      // ),
+      fonts: [
+        {
+          name: "Smiley Sans Oblique",
+          data: fontSmiley,
+          weight: 600,
+          style: "normal",
+        },
+      ],
     }
   );
 };

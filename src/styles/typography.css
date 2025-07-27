@@ -1,6 +1,10 @@
 @plugin '@tailwindcss/typography';
 
 @layer base {
+  html {
+    font-size: 15px;
+  }
+
   /* ===== Override default Tailwind Typography styles ===== */
   .app-prose {
     @apply prose;

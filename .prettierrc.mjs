@@ -3,7 +3,7 @@ export default {
   arrowParens: "avoid",
   semi: true,
   tabWidth: 2,
-  printWidth: 80,
+  printWidth: 120,
   singleQuote: false,
   jsxSingleQuote: false,
   trailingComma: "es5",
