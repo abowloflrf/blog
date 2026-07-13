@@ -1,10 +1,11 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import { getPostUrl } from "@/utils/getPostPaths";
 import { toTransitionName } from "@/utils/toTransitionName";
 import { slugifyStr } from "@/utils/slugify";
+import config from "@/config";
 import Datetime from "./Datetime.astro";
-import Tag from "./Tag.astro";
 
 type Props = {
   variant?: "h2" | "h3";
@@ -13,6 +14,7 @@ type Props = {
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 
 const { title, description, tags, ...props } = data;
+const locale = Astro.currentLocale ?? config.site.lang;
 ---
 
 <li class="my-6">
@@ -29,7 +31,18 @@ const { title, description, tags, ...props } = data;
     </Heading>
   </a>
   <ul class="my-1 flex flex-wrap gap-3 font-mono">
-    {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
+    {
+      tags.map(tag => (
+        <li>
+          <a
+            href={getRelativeLocaleUrl(locale, `tags/${slugifyStr(tag)}/`)}
+            class="hover:text-accent text-sm decoration-dashed hover:underline"
+          >
+            # {tag}
+          </a>
+        </li>
+      ))
+    }
   </ul>
   <p>{description}</p>
   <Datetime {...props} />
