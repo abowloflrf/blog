@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 const smileySans = readFile(
-  new URL("../../public/fonts/SmileySans-Oblique.ttf", import.meta.url)
+  resolve(process.cwd(), "public/fonts/SmileySans-Oblique.ttf")
 );
 
 export function loadOgFont() {
