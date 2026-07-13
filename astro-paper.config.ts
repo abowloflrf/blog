@@ -1,38 +1,39 @@
 import { defineAstroPaperConfig } from "./src/types/config";
 
+const website = process.env.MY_SITE ?? "https://ruofeng.me";
+
 export default defineAstroPaperConfig({
   site: {
-    url: "https://astro-paper.pages.dev/",
-    title: "AstroPaper",
-    description: "A minimal, responsive and SEO-friendly Astro blog theme.",
-    author: "Sat Naing",
-    profile: "https://satna.ing",
-    ogImage: "default-og.jpg",
+    url: website,
+    title: "Ruofeng's Blog",
+    description: "The place I write.",
+    author: "Lei",
+    profile: website,
+    ogImage: "",
     lang: "en",
-    timezone: "Asia/Bangkok",
+    timezone: "Asia/Shanghai",
     dir: "ltr",
   },
   posts: {
-    perPage: 4,
-    perIndex: 4,
+    perPage: 10,
+    perIndex: 8,
     scheduledPostMargin: 15 * 60 * 1000,
   },
   features: {
-    lightAndDarkMode: true,
+    lightAndDarkMode: false,
     dynamicOgImage: true,
     showArchives: true,
     showBackButton: true,
     editPost: {
-      enabled: true,
-      url: "https://github.com/satnaing/astro-paper/edit/main/",
+      enabled: false,
     },
     search: "pagefind",
   },
   socials: [
-    { name: "github",   url: "https://github.com/satnaing/astro-paper" },
-    { name: "x",        url: "https://x.com/username" },
-    { name: "linkedin", url: "https://www.linkedin.com/in/username/" },
-    { name: "mail",     url: "mailto:yourmail@gmail.com" },
+    { name: "github", url: "https://github.com/abowloflrf" },
+    { name: "x", url: "https://x.com/abowloflrf" },
+    { name: "linkedin", url: "https://www.linkedin.com/in/ruofenglei" },
+    { name: "mail", url: "mailto:i@ruofeng.me" },
   ],
   shareLinks: [
     { name: "whatsapp", url: "https://wa.me/?text=" },
