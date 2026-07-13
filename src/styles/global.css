@@ -22,7 +22,7 @@
 }
 
 @utility max-w-app {
-  @apply max-w-3xl;
+  @apply max-w-4xl 2xl:max-w-5xl;
 }
 
 @utility app-layout {
@@ -35,4 +35,31 @@
 
 :target {
   scroll-margin-block: 1rem;
+}
+
+.logo {
+  font-family: var(--font-caveat), "Trebuchet MS", cursive;
+  font-size: 2.5em;
+  font-optical-sizing: auto;
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+
+  .logo {
+    font-size: 2em;
+  }
+}
+
+@media (min-width: 1921px) {
+  html {
+    font-size: 16px;
+  }
+
+  .logo {
+    font-size: 3em;
+  }
 }
