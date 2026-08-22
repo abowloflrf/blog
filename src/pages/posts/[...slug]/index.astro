@@ -15,6 +15,7 @@ import BackButton from "./_components/BackButton.astro";
 import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
 import Giscus from "./_components/Giscus.astro";
+import TableOfContents from "./_components/TableOfContents.astro";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -74,7 +75,7 @@ const {
   hideEditPost,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 let ogImageUrl: string | undefined;
 
@@ -115,6 +116,8 @@ const ogImage = ogImageUrl
     class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
     data-pagefind-body
   >
+    <TableOfContents {headings} />
+
     <h1
       style={{ viewTransitionName: toTransitionName(post.id) }}
       class="text-accent inline-block text-2xl font-bold sm:text-3xl"
@@ -248,11 +251,26 @@ const ogImage = ogImageUrl
         ? "top-(--file-name-offset)"
         : "-top-3";
 
+      const controls = document.createElement("div");
+      controls.className = `absolute end-3 ${topClass} flex items-center gap-2`;
+
+      const language = codeBlock.dataset.language;
+      if (language) {
+        const languageLabel = document.createElement("span");
+        languageLabel.className =
+          "rounded border border-muted bg-muted px-2 py-1 text-xs leading-4 text-muted-foreground font-medium";
+        languageLabel.textContent = language;
+        languageLabel.setAttribute("aria-label", `Language: ${language}`);
+        controls.appendChild(languageLabel);
+      }
+
       const copyButton = document.createElement("button");
-      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.className =
+        "copy-code rounded border border-muted bg-muted px-2 py-1 text-xs leading-4 text-foreground font-medium";
       copyButton.innerHTML = copyButtonLabel;
+      controls.appendChild(copyButton);
       codeBlock.setAttribute("tabindex", "0");
-      codeBlock.appendChild(copyButton);
+      codeBlock.appendChild(controls);
 
       codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
       wrapper.appendChild(codeBlock);
@@ -264,15 +282,43 @@ const ogImage = ogImageUrl
 
     async function copyCode(block, button) {
       const code = block.querySelector("code");
-      const text = code?.innerText;
+      const text = code?.textContent ?? "";
 
-      await navigator.clipboard.writeText(text ?? "");
+      const copied = await copyText(text);
 
-      button.innerText = "Copied";
+      button.innerText = copied ? "Copied" : "Copy failed";
 
       setTimeout(() => {
         button.innerText = copyButtonLabel;
       }, 700);
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch {
+        // Fall back for non-HTTPS pages or browsers that deny Clipboard API.
+      }
+
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.setAttribute("readonly", "");
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.select();
+      textArea.setSelectionRange(0, text.length);
+
+      let copied = false;
+      try {
+        copied = document.execCommand("copy");
+      } finally {
+        textArea.remove();
+      }
+      return copied;
     }
   }
   attachCopyButtons();
