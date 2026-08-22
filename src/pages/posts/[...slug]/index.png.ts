@@ -4,6 +4,7 @@ import satori from "satori";
 import sharp from "sharp";
 import { getPostSlug } from "@/utils/getPostPaths";
 import { loadOgFont } from "@/utils/loadOgFont";
+import { postFilter } from "@/utils/postFilter";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -11,9 +12,9 @@ export async function getStaticPaths() {
     return [];
   }
 
-  const posts = await getCollection("posts").then(p =>
-    p.filter(({ data }) => !data.draft && !data.ogImage)
-  );
+  const posts = (await getCollection("posts"))
+    .filter(postFilter)
+    .filter(({ data }) => !data.ogImage);
 
   return posts.map(post => ({
     params: { slug: getPostSlug(post.id, post.filePath) },

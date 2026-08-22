@@ -7,10 +7,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist --root-selector '[data-pagefind-body]' && cp -r dist/pagefind public/",
+    "build": "pnpm run pagefind:clean && astro check && astro build && pagefind --site dist --root-selector '[data-pagefind-body]' && pnpm run pagefind:sync",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
+    "pagefind:clean": "node scripts/pagefind.mjs clean",
+    "pagefind:sync": "node scripts/pagefind.mjs sync",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint ."

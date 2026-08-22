@@ -99,6 +99,7 @@ const ogImage = ogImageUrl
 
 <PostLayout
   title={`${title} | ${config.site.title}`}
+  headline={title}
   description={description}
   ogImage={ogImage}
   canonicalURL={canonicalURL}
@@ -168,6 +169,13 @@ const ogImage = ogImageUrl
 </PostLayout>
 
 <script is:inline data-astro-rerun>
+  // `document` survives ClientRouter swaps, so abort listeners installed by the
+  // previous article before this rerun attaches a fresh set. `var` is intentional:
+  // unlike a top-level `const`, it can be safely redeclared when the script reruns.
+  window.__postPageAbortController?.abort();
+  var postPageAbortController = new AbortController();
+  window.__postPageAbortController = postPageAbortController;
+
   function createProgressBar() {
     const progressContainer = document.createElement("div");
     progressContainer.className =
@@ -183,20 +191,24 @@ const ogImage = ogImageUrl
   createProgressBar();
 
   function updateScrollProgress() {
-    document.addEventListener("scroll", () => {
-      const winScroll =
-        document.body.scrollTop || document.documentElement.scrollTop;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      if (document) {
-        const myBar = document.getElementById("myBar");
-        if (myBar) {
-          myBar.style.width = scrolled + "%";
+    document.addEventListener(
+      "scroll",
+      () => {
+        const winScroll =
+          document.body.scrollTop || document.documentElement.scrollTop;
+        const height =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        if (document) {
+          const myBar = document.getElementById("myBar");
+          if (myBar) {
+            myBar.style.width = scrolled + "%";
+          }
         }
-      }
-    });
+      },
+      { passive: true, signal: postPageAbortController.signal }
+    );
   }
   updateScrollProgress();
 
@@ -524,14 +536,22 @@ const ogImage = ogImageUrl
   }
   initLightbox();
 
-  if (!window.__lightboxSwapBound) {
-    window.__lightboxSwapBound = true;
-    document.addEventListener("astro:before-swap", () =>
-      window.__closeLightbox?.()
-    );
+  if (!window.__postPageSwapBound) {
+    window.__postPageSwapBound = true;
+    document.addEventListener("astro:before-swap", () => {
+      window.__postPageAbortController?.abort();
+      window.__postPageAbortController = null;
+      window.__closeLightbox?.();
+    });
   }
 
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
-  );
+  // Keep a single scroll-reset listener for all future article navigations.
+  if (!window.__postPageScrollResetBound) {
+    window.__postPageScrollResetBound = true;
+    document.addEventListener("astro:after-swap", () => {
+      if (document.getElementById("article")) {
+        window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+      }
+    });
+  }
 </script>

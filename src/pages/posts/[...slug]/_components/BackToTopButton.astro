@@ -36,6 +36,10 @@ const t = useTranslations(Astro.currentLocale);
 </div>
 
 <script is:inline data-astro-rerun>
+  window.__backToTopAbortController?.abort();
+  var backToTopAbortController = new AbortController();
+  window.__backToTopAbortController = backToTopAbortController;
+
   function backToTop() {
     const rootElement = document.documentElement;
     const btnContainer = document.querySelector("#btt-btn-container");
@@ -73,15 +77,27 @@ const t = useTranslations(Astro.currentLocale);
     }
 
     let ticking = false;
-    document.addEventListener("scroll", () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    });
+    document.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            handleScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      },
+      { passive: true, signal: backToTopAbortController.signal }
+    );
   }
   backToTop();
+
+  if (!window.__backToTopSwapBound) {
+    window.__backToTopSwapBound = true;
+    document.addEventListener("astro:before-swap", () => {
+      window.__backToTopAbortController?.abort();
+      window.__backToTopAbortController = null;
+    });
+  }
 </script>
