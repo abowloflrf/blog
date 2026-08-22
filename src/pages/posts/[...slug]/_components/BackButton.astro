@@ -9,20 +9,46 @@ const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
 ---
 
-{
-  config.features.showBackButton && (
-    <div class="app-layout flex items-center justify-start">
+<div
+  class:list={[
+    "app-layout post-toolbar mt-8 mb-2 flex items-center",
+    config.features.showBackButton ? "justify-between" : "justify-end",
+  ]}
+  data-reading-width="default"
+  data-post-toolbar
+>
+  {
+    config.features.showBackButton && (
       <LinkButton
         id="back-button"
         href={getRelativeLocaleUrl(locale, "")}
-        class="focus-outline hover:text-foreground/75 -ms-2 mt-8 mb-2"
+        class="focus-outline hover:text-foreground/75 -ms-2"
       >
         <IconChevronLeft class="inline-block size-6 rtl:rotate-180" />
         <span>{t.post.goBack}</span>
       </LinkButton>
-    </div>
-  )
-}
+    )
+  }
+  <slot />
+</div>
+
+<style>
+  .post-toolbar {
+    transition: max-width 220ms ease;
+  }
+
+  @media (min-width: 48rem) {
+    .post-toolbar[data-reading-width="wide"] {
+      max-width: 80rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post-toolbar {
+      transition: none;
+    }
+  }
+</style>
 
 <script>
   function updateGoBackUrl() {

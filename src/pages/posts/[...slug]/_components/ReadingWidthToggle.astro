@@ -1,0 +1,106 @@
+---
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+type Props = {
+  variant?: "toolbar" | "toc";
+};
+
+const { variant = "toolbar" } = Astro.props;
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
+---
+
+<button
+  type="button"
+  class:list={["reading-width-toggle", `reading-width-toggle--${variant}`]}
+  aria-pressed="false"
+  aria-label={t.post.useWideLayout}
+  title={t.post.useWideLayout}
+  data-reading-width-toggle
+  data-reading-width-variant={variant}
+  data-wide-label={t.post.useWideLayout}
+  data-default-label={t.post.useDefaultLayout}
+>
+  <svg
+    aria-hidden="true"
+    class="size-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    data-reading-width-expand-icon
+  >
+    <path d="M8 7 3 12l5 5"></path>
+    <path d="M3 12h18"></path>
+    <path d="m16 7 5 5-5 5"></path>
+  </svg>
+  <svg
+    aria-hidden="true"
+    class="hidden size-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    data-reading-width-collapse-icon
+  >
+    <path d="m3 7 5 5-5 5"></path>
+    <path d="M3 12h18"></path>
+    <path d="m21 7-5 5 5 5"></path>
+  </svg>
+</button>
+
+<style>
+  .reading-width-toggle {
+    display: inline-flex;
+    width: 2.5rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    background: transparent;
+    color: var(--color-muted-foreground);
+    transition:
+      color 150ms,
+      border-color 150ms,
+      background-color 150ms,
+      transform 150ms,
+      opacity 150ms;
+  }
+
+  .reading-width-toggle:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    background: var(--color-muted);
+    color: var(--color-accent);
+  }
+
+  .reading-width-toggle:active {
+    transform: translateY(1px);
+  }
+
+  .reading-width-toggle--toolbar {
+    display: none;
+  }
+
+  .reading-width-toggle--toc {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    .reading-width-toggle--toolbar,
+    .reading-width-toggle--toc {
+      display: inline-flex;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reading-width-toggle {
+      transition: none;
+    }
+  }
+</style>

@@ -60,7 +60,7 @@
     }
 
     figcaption {
-      @apply opacity-75;
+      @apply text-center opacity-75;
     }
 
     table {

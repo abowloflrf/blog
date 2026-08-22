@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "pnpm run pagefind:clean && astro check && astro build && pagefind --site dist --root-selector '[data-pagefind-body]' && pnpm run pagefind:sync",
     "preview": "astro preview",
+    "post:new": "node scripts/new-post.mjs",
     "sync": "astro sync",
     "astro": "astro",
     "pagefind:clean": "node scripts/pagefind.mjs clean",

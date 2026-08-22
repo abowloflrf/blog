@@ -22,6 +22,10 @@ export default {
     previousPost: "Previous Post",
     nextPost: "Next Post",
     tableOfContents: "On this page",
+    useWideLayout: "Wide layout",
+    useDefaultLayout: "Default layout",
+    openTableOfContents: "Open table of contents",
+    closeTableOfContents: "Close table of contents",
   },
   pagination: {
     prev: "Prev",

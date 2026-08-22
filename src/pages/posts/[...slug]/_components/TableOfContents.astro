@@ -1,6 +1,7 @@
 ---
 import { useTranslations } from "@/i18n";
 import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
+import ReadingWidthToggle from "./ReadingWidthToggle.astro";
 
 type Heading = {
   depth: number;
@@ -18,42 +19,79 @@ const t = useTranslations(locale);
 const tocHeadings = headings.filter(
   heading => heading.depth === 2 || heading.depth === 3
 );
+const shouldRenderToc = tocHeadings.length > 1;
 ---
 
 {
-  tocHeadings.length > 0 && (
-    <aside class="toc" data-toc>
-      <nav aria-label={t.post.tableOfContents}>
-        <button
-          type="button"
-          class="bg-muted/65 text-foreground hover:bg-muted focus-visible:bg-muted mb-3 inline-flex items-center gap-1.5 rounded px-2.5 py-1.5 text-xs font-medium transition-[background-color,transform] duration-150 active:translate-y-px motion-reduce:transition-none"
-          data-toc-back-to-top
-        >
-          <IconArrowNarrowUp class="size-3.5" />
-          {t.post.backToTop}
-        </button>
-
-        <ol class="border-border border-s">
+  shouldRenderToc && (
+    <div class="toc-peek" data-toc-peek>
+      <button
+        type="button"
+        class="toc-preview"
+        aria-label={t.post.openTableOfContents}
+        aria-controls="article-table-of-contents"
+        aria-expanded="false"
+        data-toc-trigger
+        data-open-label={t.post.openTableOfContents}
+        data-close-label={t.post.closeTableOfContents}
+      >
+        <span class="sr-only">{t.post.openTableOfContents}</span>
+        <span class="toc-preview-list" aria-hidden="true">
           {tocHeadings.map(heading => (
-            <li class:list={[heading.depth === 2 && "mt-1.5 first:mt-0"]}>
-              <a
-                href={`#${heading.slug}`}
-                class:list={[
-                  "toc-link text-muted-foreground hover:text-accent focus-visible:text-accent block border-s-2 border-transparent py-1.5 text-sm leading-snug no-underline transition-[color,transform,border-color] duration-150 motion-reduce:transition-none",
-                  heading.depth === 3
-                    ? "toc-link--subsection ps-7 text-[0.8125rem]"
-                    : "ps-3 font-semibold",
-                ]}
-                data-toc-link
-                data-heading-id={heading.slug}
-              >
-                {heading.text}
-              </a>
-            </li>
+            <span
+              class:list={[
+                "toc-preview-marker",
+                heading.depth === 3 && "toc-preview-marker--subsection",
+              ]}
+              data-toc-marker
+              data-heading-id={heading.slug}
+            />
           ))}
-        </ol>
-      </nav>
-    </aside>
+        </span>
+      </button>
+
+      <aside
+        id="article-table-of-contents"
+        class="toc"
+        aria-label={t.post.tableOfContents}
+        data-toc
+      >
+        <nav aria-label={t.post.tableOfContents}>
+          <div class="toc-actions mb-3 flex items-center">
+            <button
+              type="button"
+              class="toc-action"
+              aria-label={t.post.backToTop}
+              title={t.post.backToTop}
+              data-toc-back-to-top
+            >
+              <IconArrowNarrowUp class="size-4" />
+            </button>
+            <ReadingWidthToggle variant="toc" />
+          </div>
+
+          <ol class="toc-list border-border border-s">
+            {tocHeadings.map(heading => (
+              <li class:list={[heading.depth === 2 && "mt-1.5 first:mt-0"]}>
+                <a
+                  href={`#${heading.slug}`}
+                  class:list={[
+                    "toc-link text-muted-foreground hover:text-accent focus-visible:text-accent block border-s-2 border-transparent py-1.5 text-sm leading-snug no-underline transition-[color,transform,border-color] duration-150 motion-reduce:transition-none",
+                    heading.depth === 3
+                      ? "toc-link--subsection ps-7 text-[0.8125rem]"
+                      : "ps-3 font-semibold",
+                  ]}
+                  data-toc-link
+                  data-heading-id={heading.slug}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </aside>
+    </div>
   )
 }
 
@@ -69,6 +107,53 @@ const tocHeadings = headings.filter(
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
+  }
+
+  .toc-preview {
+    display: none;
+  }
+
+  .toc-action {
+    display: inline-flex;
+    width: 2.5rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    background: transparent;
+    color: var(--color-muted-foreground);
+    transition:
+      color 150ms,
+      border-color 150ms,
+      background-color 150ms,
+      transform 150ms;
+  }
+
+  .toc-action:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    background: var(--color-muted);
+    color: var(--color-accent);
+  }
+
+  .toc-action:active {
+    transform: translateY(1px);
+  }
+
+  .toc-actions {
+    width: max-content;
+    gap: 0.375rem;
+  }
+
+  .toc-actions :global(.reading-width-toggle--toc) {
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    background: transparent;
+  }
+
+  .toc-actions :global(.reading-width-toggle--toc:hover) {
+    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    background: var(--color-muted);
   }
 
   .toc-link:hover {
@@ -104,6 +189,10 @@ const tocHeadings = headings.filter(
   }
 
   @media (min-width: 80rem) {
+    .toc-peek {
+      display: contents;
+    }
+
     .toc {
       display: block;
     }
@@ -116,7 +205,215 @@ const tocHeadings = headings.filter(
     }
   }
 
+  @media (min-width: 48rem) {
+    :global(.post-main[data-reading-width="wide"]) .toc-peek {
+      position: fixed;
+      z-index: 35;
+      inset-block-start: 50%;
+      inset-inline-end: env(safe-area-inset-right, 0px);
+      display: block;
+      width: 3.25rem;
+      transform: translateY(-50%);
+    }
+
+    :global(.post-main[data-reading-width="wide"]) .toc-peek::before {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 100%;
+      width: 0.75rem;
+      content: "";
+    }
+
+    :global(.post-main[data-reading-width="wide"]) .toc-preview {
+      display: flex;
+      width: 100%;
+      max-height: min(70svh, 36rem);
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 0.625rem;
+      border: 1px solid transparent;
+      border-inline-end: 0;
+      border-radius: 0.375rem 0 0 0.375rem;
+      background: color-mix(in srgb, var(--color-background) 82%, transparent);
+      color: var(--color-muted-foreground);
+      touch-action: pan-y;
+      backdrop-filter: blur(0.75rem);
+      transition:
+        color 150ms,
+        border-color 150ms,
+        background-color 150ms;
+    }
+
+    [dir="rtl"] :global(.post-main[data-reading-width="wide"]) .toc-preview {
+      border-inline-start: 0;
+      border-inline-end: 1px solid transparent;
+      border-radius: 0 0.375rem 0.375rem 0;
+    }
+
+    :global(.post-main[data-reading-width="wide"])
+      .toc-preview[aria-expanded="true"] {
+      border-color: var(--color-border);
+      border-inline-end-color: transparent;
+      background: color-mix(in srgb, var(--color-muted) 82%, transparent);
+      color: var(--color-foreground);
+    }
+
+    .toc-preview-list {
+      display: grid;
+      width: 2rem;
+      max-height: calc(min(70svh, 36rem) - 1.5rem);
+      justify-items: end;
+      gap: clamp(0.3rem, 0.65svh, 0.55rem);
+      overflow: hidden;
+    }
+
+    [dir="rtl"] .toc-preview-list {
+      justify-items: start;
+    }
+
+    .toc-preview-marker {
+      width: 1.75rem;
+      height: 0.1875rem;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.55;
+      transition:
+        width 150ms,
+        opacity 150ms,
+        background-color 150ms;
+    }
+
+    .toc-preview-marker:nth-child(3n) {
+      width: 1.5rem;
+    }
+
+    .toc-preview-marker--subsection {
+      width: 1.125rem;
+      opacity: 0.4;
+    }
+
+    .toc-preview-marker[aria-current="location"] {
+      width: 2rem;
+      background: var(--color-accent);
+      opacity: 1;
+    }
+
+    .toc-preview-marker[data-preview-current] {
+      width: 2rem;
+      background: var(--color-accent);
+      opacity: 1;
+    }
+
+    :global(.post-main[data-reading-width="wide"]) .toc {
+      position: absolute;
+      z-index: 1;
+      inset-block-start: 50%;
+      inset-inline-start: auto;
+      inset-inline-end: calc(100% + 0.625rem);
+      display: block;
+      width: min(18rem, calc(100vw - 5rem));
+      max-width: none;
+      max-height: min(68svh, 36rem);
+      padding: 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 0.75rem;
+      background: color-mix(in srgb, var(--color-background) 96%, transparent);
+      box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.12);
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.5rem, -50%) scale(0.985);
+      transform-origin: right center;
+      backdrop-filter: blur(1rem);
+      transition:
+        opacity 160ms ease,
+        transform 160ms ease,
+        visibility 160ms;
+    }
+
+    [dir="rtl"] :global(.post-main[data-reading-width="wide"]) .toc {
+      transform: translate(-0.5rem, -50%) scale(0.985);
+      transform-origin: left center;
+    }
+
+    :global(.post-main[data-reading-width="wide"]) .toc-peek.is-open .toc {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(0, -50%) scale(1);
+    }
+
+    [dir="rtl"]
+      :global(.post-main[data-reading-width="wide"])
+      .toc-peek.is-open
+      .toc {
+      transform: translate(0, -50%) scale(1);
+    }
+
+    :global(.post-main[data-reading-width="wide"]) .toc-list {
+      border-inline-start: 0;
+    }
+
+    :global(.post-main[data-reading-width="wide"]) .toc-link {
+      margin-block: 0.125rem;
+      border-radius: 0;
+    }
+
+    :global(.post-main[data-reading-width="wide"])
+      .toc-link[aria-current="location"],
+    :global(.post-main[data-reading-width="wide"])
+      .toc-link[data-preview-current] {
+      border-color: transparent;
+      background: transparent;
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    :global(.post-main[data-reading-width="wide"])
+      .toc-link--subsection[aria-current="location"]::before {
+      background: var(--color-border);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    :global(.post-main[data-reading-width="wide"]) .toc {
+      width: min(21rem, calc(100vw - 5rem));
+      max-height: min(72svh, 42rem);
+    }
+  }
+
+  @media (min-width: 48rem) and (hover: hover) and (pointer: fine) {
+    :global(.post-main[data-reading-width="wide"]) .toc-preview:hover {
+      border-color: var(--color-border);
+      border-inline-end-color: transparent;
+      background: color-mix(in srgb, var(--color-muted) 82%, transparent);
+      color: var(--color-foreground);
+    }
+
+    :global(.post-main[data-reading-width="wide"]) .toc-peek:hover .toc {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(0, -50%) scale(1);
+    }
+
+    [dir="rtl"]
+      :global(.post-main[data-reading-width="wide"])
+      .toc-peek:hover
+      .toc {
+      transform: translate(0, -50%) scale(1);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .toc,
+    .toc-preview,
+    .toc-preview-marker,
+    .toc-action,
+    .toc-link:hover {
+      transition: none;
+    }
+
     .toc-link:hover {
       transform: none;
     }
@@ -126,14 +423,28 @@ const tocHeadings = headings.filter(
 <script is:inline data-astro-rerun>
   function initTableOfContents() {
     window.__tocObserver?.disconnect();
+    window.__tocOutsideAbortController?.abort();
+
+    const tocOutsideAbortController = new AbortController();
+    window.__tocOutsideAbortController = tocOutsideAbortController;
 
     const toc = document.querySelector("[data-toc]");
+    const main = document.querySelector(".post-main");
+    const peek = document.querySelector("[data-toc-peek]");
+    const trigger = document.querySelector("[data-toc-trigger]");
+    const backToTopButton = toc?.querySelector("[data-toc-back-to-top]");
     const tocLinks = toc
       ? Array.from(toc.querySelectorAll("[data-toc-link]"))
+      : [];
+    const tocMarkers = peek
+      ? Array.from(peek.querySelectorAll("[data-toc-marker]"))
       : [];
     const tocHeadings = tocLinks
       .map(link => document.getElementById(link.dataset.headingId))
       .filter(Boolean);
+    let previewHeadingId = null;
+    let lastTriggerPointerType = "";
+    let lastTriggerTouchAt = 0;
 
     function setActiveTocHeading(id) {
       for (const link of tocLinks) {
@@ -142,6 +453,15 @@ const tocHeadings = headings.filter(
           link.setAttribute("aria-current", "location");
         } else {
           link.removeAttribute("aria-current");
+        }
+      }
+
+      for (const marker of tocMarkers) {
+        const isActive = marker.dataset.headingId === id;
+        if (isActive) {
+          marker.setAttribute("aria-current", "location");
+        } else {
+          marker.removeAttribute("aria-current");
         }
       }
     }
@@ -160,6 +480,69 @@ const tocHeadings = headings.filter(
       setActiveTocHeading(activeHeading.id);
     }
 
+    function findClosestTocMarker(clientY) {
+      if (tocMarkers.length === 0) return null;
+
+      let closestMarker = tocMarkers[0];
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      for (const marker of tocMarkers) {
+        const rect = marker.getBoundingClientRect();
+        const distance = Math.abs(clientY - (rect.top + rect.height / 2));
+        if (distance >= closestDistance) continue;
+        closestMarker = marker;
+        closestDistance = distance;
+      }
+
+      return closestMarker;
+    }
+
+    function setPreviewTocHeading(id) {
+      if (!id || previewHeadingId === id) return;
+      previewHeadingId = id;
+      peek?.classList.add("is-previewing");
+
+      for (const marker of tocMarkers) {
+        marker.toggleAttribute(
+          "data-preview-current",
+          marker.dataset.headingId === id
+        );
+      }
+
+      let previewLink = null;
+      for (const link of tocLinks) {
+        const isPreviewed = link.dataset.headingId === id;
+        link.toggleAttribute("data-preview-current", isPreviewed);
+        if (isPreviewed) previewLink = link;
+      }
+
+      if (toc && previewLink) {
+        const tocRect = toc.getBoundingClientRect();
+        const linkRect = previewLink.getBoundingClientRect();
+        const safeTop = tocRect.top + 3.5 * 16;
+        const safeBottom = tocRect.bottom - 16;
+
+        if (linkRect.top < safeTop || linkRect.bottom > safeBottom) {
+          toc.scrollTop +=
+            linkRect.top -
+            tocRect.top -
+            tocRect.height / 2 +
+            linkRect.height / 2;
+        }
+      }
+    }
+
+    function clearPreviewTocHeading() {
+      previewHeadingId = null;
+      peek?.classList.remove("is-previewing");
+      for (const marker of tocMarkers) {
+        marker.removeAttribute("data-preview-current");
+      }
+      for (const link of tocLinks) {
+        link.removeAttribute("data-preview-current");
+      }
+    }
+
     if (tocHeadings.length > 0) {
       updateActiveTocHeading();
 
@@ -171,17 +554,152 @@ const tocHeadings = headings.filter(
       window.__tocObserver = tocObserver;
 
       for (const link of tocLinks) {
+        link.addEventListener("pointerenter", event => {
+          if (
+            event.pointerType !== "touch" &&
+            main?.dataset.readingWidth === "wide"
+          ) {
+            setPreviewTocHeading(link.dataset.headingId);
+          }
+        });
         link.addEventListener("click", () => {
           setActiveTocHeading(link.dataset.headingId);
+          closePopover();
         });
       }
     }
 
-    toc
-      ?.querySelector("[data-toc-back-to-top]")
-      ?.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+    function openPopover(moveFocus = false) {
+      if (
+        main?.dataset.readingWidth !== "wide" ||
+        !window.matchMedia("(min-width: 48rem)").matches
+      ) {
+        return;
+      }
+
+      peek?.classList.add("is-open");
+      trigger?.setAttribute("aria-expanded", "true");
+      trigger?.setAttribute("aria-label", trigger.dataset.closeLabel);
+
+      if (moveFocus) {
+        requestAnimationFrame(() => {
+          const currentLink = toc?.querySelector(
+            '[data-toc-link][aria-current="location"]'
+          );
+          (currentLink ?? tocLinks[0])?.focus();
+        });
+      }
+    }
+
+    function closePopover() {
+      clearPreviewTocHeading();
+      peek?.classList.remove("is-open");
+      trigger?.setAttribute("aria-expanded", "false");
+      trigger?.setAttribute("aria-label", trigger.dataset.openLabel);
+    }
+
+    trigger?.addEventListener("focus", () => {
+      requestAnimationFrame(() => {
+        if (trigger.matches(":focus-visible")) openPopover();
       });
+    });
+    trigger?.addEventListener("pointerdown", event => {
+      lastTriggerPointerType = event.pointerType;
+    });
+    trigger?.addEventListener(
+      "touchstart",
+      () => {
+        lastTriggerTouchAt = performance.now();
+      },
+      { passive: true }
+    );
+    trigger?.addEventListener("click", event => {
+      if (event.detail === 0) {
+        openPopover(true);
+        return;
+      }
+
+      const pointerType = event.pointerType || lastTriggerPointerType;
+      const isTouchInteraction =
+        pointerType === "touch" ||
+        performance.now() - lastTriggerTouchAt < 1000;
+
+      if (isTouchInteraction) {
+        lastTriggerTouchAt = 0;
+        if (peek?.classList.contains("is-open")) {
+          closePopover();
+          trigger.blur();
+        } else {
+          const marker = findClosestTocMarker(event.clientY);
+          setPreviewTocHeading(marker?.dataset.headingId);
+          openPopover();
+        }
+        return;
+      }
+
+      if (pointerType !== "touch") {
+        const marker = findClosestTocMarker(event.clientY);
+        const link = tocLinks.find(
+          item => item.dataset.headingId === marker?.dataset.headingId
+        );
+
+        if (link) {
+          link.click();
+          trigger.blur();
+          return;
+        }
+      }
+
+      if (peek?.classList.contains("is-open")) {
+        closePopover();
+        trigger.blur();
+      } else {
+        openPopover();
+      }
+    });
+    trigger?.addEventListener("pointermove", event => {
+      if (event.pointerType === "touch") return;
+
+      const marker = findClosestTocMarker(event.clientY);
+      setPreviewTocHeading(marker?.dataset.headingId);
+    });
+    peek?.addEventListener("pointerleave", event => {
+      if (event.pointerType !== "touch") clearPreviewTocHeading();
+    });
+    peek?.addEventListener("focusout", () => {
+      requestAnimationFrame(() => {
+        if (!peek.contains(document.activeElement)) closePopover();
+      });
+    });
+    document.addEventListener(
+      "pointerdown",
+      event => {
+        if (!peek?.contains(event.target)) closePopover();
+      },
+      { signal: tocOutsideAbortController.signal }
+    );
+    main?.addEventListener("reading-width-change", () => {
+      if (main.dataset.readingWidth === "wide") return;
+      closePopover();
+      requestAnimationFrame(() => {
+        if (window.matchMedia("(min-width: 80rem)").matches) {
+          backToTopButton?.focus();
+        } else if (document.activeElement instanceof HTMLElement) {
+          document.activeElement?.blur();
+        }
+      });
+    });
+    peek?.addEventListener("keydown", event => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      closePopover();
+      trigger?.focus({ preventScroll: true });
+    });
+
+    backToTopButton?.addEventListener("click", () => {
+      closePopover();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   }
 
   if (document.readyState === "loading") {

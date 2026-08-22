@@ -20,6 +20,10 @@ export interface UIStrings {
     previousPost: string;
     nextPost: string;
     tableOfContents: string;
+    useWideLayout: string;
+    useDefaultLayout: string;
+    openTableOfContents: string;
+    closeTableOfContents: string;
   };
   pagination: {
     prev: string;

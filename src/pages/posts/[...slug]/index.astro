@@ -16,6 +16,7 @@ import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
 import Giscus from "./_components/Giscus.astro";
 import TableOfContents from "./_components/TableOfContents.astro";
+import ReadingWidthToggle from "./_components/ReadingWidthToggle.astro";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -76,7 +77,6 @@ const {
 } = post.data;
 
 const { Content, headings } = await render(post);
-
 let ogImageUrl: string | undefined;
 
 if (typeof initOgImage === "string") {
@@ -109,11 +109,14 @@ const ogImage = ogImageUrl
 >
   <Header />
 
-  <BackButton />
+  <BackButton>
+    <ReadingWidthToggle />
+  </BackButton>
 
   <main
     id="main-content"
-    class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
+    class="app-layout post-main"
+    data-reading-width="default"
     data-pagefind-body
   >
     <TableOfContents {headings} />
@@ -171,6 +174,42 @@ const ogImage = ogImageUrl
   <Footer />
 </PostLayout>
 
+<style>
+  .post-main {
+    transition: max-width 220ms ease;
+  }
+
+  .post-main #article {
+    transition: max-width 220ms ease;
+  }
+
+  @media (min-width: 48rem) {
+    .post-main[data-reading-width="wide"] {
+      max-width: 80rem;
+    }
+
+    .post-main[data-reading-width="wide"] #article {
+      max-width: none;
+    }
+  }
+
+  @media (min-width: 48rem) and (hover: none) and (pointer: coarse) {
+    .post-main[data-reading-width="wide"] {
+      padding-inline-end: max(
+        3.75rem,
+        calc(3.25rem + env(safe-area-inset-right, 0px))
+      );
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post-main,
+    .post-main #article {
+      transition: none;
+    }
+  }
+</style>
+
 <script is:inline data-astro-rerun>
   // `document` survives ClientRouter swaps, so abort listeners installed by the
   // previous article before this rerun attaches a fresh set. `var` is intentional:
@@ -179,41 +218,54 @@ const ogImage = ogImageUrl
   var postPageAbortController = new AbortController();
   window.__postPageAbortController = postPageAbortController;
 
-  function createProgressBar() {
-    const progressContainer = document.createElement("div");
-    progressContainer.className =
-      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
-
-    const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar h-1 w-0 bg-accent";
-    progressBar.id = "myBar";
-
-    progressContainer.appendChild(progressBar);
-    document.body.appendChild(progressContainer);
-  }
-  createProgressBar();
-
-  function updateScrollProgress() {
-    document.addEventListener(
-      "scroll",
-      () => {
-        const winScroll =
-          document.body.scrollTop || document.documentElement.scrollTop;
-        const height =
-          document.documentElement.scrollHeight -
-          document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-        if (document) {
-          const myBar = document.getElementById("myBar");
-          if (myBar) {
-            myBar.style.width = scrolled + "%";
-          }
-        }
-      },
-      { passive: true, signal: postPageAbortController.signal }
+  function initReadingWidth() {
+    const main = document.querySelector(".post-main");
+    const toolbar = document.querySelector("[data-post-toolbar]");
+    const toggles = Array.from(
+      document.querySelectorAll("[data-reading-width-toggle]")
     );
+    if (!main || toggles.length === 0) return;
+
+    function setWideLayout(wide) {
+      main.dataset.readingWidth = wide ? "wide" : "default";
+      if (toolbar) {
+        toolbar.dataset.readingWidth = wide ? "wide" : "default";
+      }
+
+      for (const toggle of toggles) {
+        const label = wide
+          ? toggle.dataset.defaultLabel
+          : toggle.dataset.wideLabel;
+        toggle.setAttribute("aria-pressed", String(wide));
+        toggle.setAttribute("aria-label", label);
+        toggle.setAttribute("title", label);
+        toggle
+          .querySelector("[data-reading-width-expand-icon]")
+          ?.classList.toggle("hidden", wide);
+        toggle
+          .querySelector("[data-reading-width-collapse-icon]")
+          ?.classList.toggle("hidden", !wide);
+      }
+
+      main.dispatchEvent(
+        new CustomEvent("reading-width-change", { detail: { wide } })
+      );
+    }
+
+    for (const toggle of toggles) {
+      toggle.addEventListener(
+        "click",
+        () => setWideLayout(main.dataset.readingWidth !== "wide"),
+        { signal: postPageAbortController.signal }
+      );
+    }
+
+    const shouldStartWide = window.matchMedia(
+      "(min-width: 48rem) and (orientation: portrait) and (hover: none) and (pointer: coarse)"
+    ).matches;
+    setWideLayout(shouldStartWide);
   }
-  updateScrollProgress();
+  initReadingWidth();
 
   function addHeadingLinks() {
     const headings = Array.from(
@@ -333,6 +385,35 @@ const ogImage = ogImageUrl
 
     let overlay = null;
     let lastFocused = null;
+    let pageScrollLock = null;
+
+    function lockPageScroll() {
+      if (pageScrollLock) return;
+
+      const root = document.documentElement;
+      pageScrollLock = {
+        rootOverflow: root.style.overflow,
+        rootOverscrollBehavior: root.style.overscrollBehavior,
+        bodyOverflow: document.body.style.overflow,
+        bodyOverscrollBehavior: document.body.style.overscrollBehavior,
+      };
+      root.style.overflow = "hidden";
+      root.style.overscrollBehavior = "none";
+      document.body.style.overflow = "hidden";
+      document.body.style.overscrollBehavior = "none";
+    }
+
+    function unlockPageScroll() {
+      if (!pageScrollLock) return;
+
+      const root = document.documentElement;
+      root.style.overflow = pageScrollLock.rootOverflow;
+      root.style.overscrollBehavior = pageScrollLock.rootOverscrollBehavior;
+      document.body.style.overflow = pageScrollLock.bodyOverflow;
+      document.body.style.overscrollBehavior =
+        pageScrollLock.bodyOverscrollBehavior;
+      pageScrollLock = null;
+    }
 
     // Defer attribute mutations so they don't push the LCP timestamp.
     // Event listeners below use delegation and don't need the attributes to exist yet.
@@ -350,7 +431,7 @@ const ogImage = ogImageUrl
       }
     });
 
-    function open(src, alt, trigger) {
+    function open(src, alt, captionText, trigger) {
       if (overlay) return;
       lastFocused = trigger ?? document.activeElement;
 
@@ -375,10 +456,26 @@ const ogImage = ogImageUrl
       const image = document.createElement("img");
       image.src = src;
       image.alt = "";
-      image.className =
-        "max-h-[90dvh] max-w-[90dvw] cursor-default object-contain";
+      image.className = captionText
+        ? "block h-auto max-h-[calc(90dvh-2rem)] w-auto max-w-[90dvw] cursor-default object-contain"
+        : "block h-auto max-h-[90dvh] w-auto max-w-[90dvw] cursor-default object-contain";
 
-      overlay.append(closeButton, image);
+      const preview = document.createElement("figure");
+      preview.className =
+        "m-0 flex max-h-[90dvh] max-w-[90dvw] flex-col items-center";
+      preview.appendChild(image);
+
+      if (captionText) {
+        const caption = document.createElement("figcaption");
+        caption.id = "lightbox-caption";
+        caption.className =
+          "mt-3 max-w-[90dvw] shrink-0 text-center text-sm leading-5 text-white";
+        caption.textContent = captionText;
+        preview.appendChild(caption);
+        overlay.setAttribute("aria-describedby", caption.id);
+      }
+
+      overlay.append(closeButton, preview);
       overlay.addEventListener("click", e => {
         if (e.target === overlay && currentScale <= 1) close();
       });
@@ -500,7 +597,7 @@ const ogImage = ogImageUrl
       });
 
       document.body.appendChild(overlay);
-      document.body.style.overflow = "hidden";
+      lockPageScroll();
       document.addEventListener("keydown", onKeyDown);
       window.__closeLightbox = close;
 
@@ -515,7 +612,7 @@ const ogImage = ogImageUrl
       window.__closeLightbox = null;
 
       document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
+      unlockPageScroll();
       lastFocused?.focus();
       lastFocused = null;
 
@@ -562,7 +659,11 @@ const ogImage = ogImageUrl
     }
 
     function activate(image) {
-      open(image.currentSrc || image.src, image.alt, image);
+      const caption = image
+        .closest("figure")
+        ?.querySelector("figcaption")
+        ?.textContent?.trim();
+      open(image.currentSrc || image.src, image.alt, caption, image);
     }
 
     article.addEventListener("click", e => {
@@ -587,6 +688,9 @@ const ogImage = ogImageUrl
     document.addEventListener("astro:before-swap", () => {
       window.__postPageAbortController?.abort();
       window.__postPageAbortController = null;
+      window.__tocObserver?.disconnect();
+      window.__tocOutsideAbortController?.abort();
+      window.__tocOutsideAbortController = null;
       window.__closeLightbox?.();
     });
   }
