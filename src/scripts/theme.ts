@@ -1,13 +1,12 @@
 const THEME_KEY = "theme";
 const LIGHT = "light";
 const DARK = "dark";
+const GISCUS_ORIGIN = "https://giscus.app";
 
 function getPreferredTheme(): string {
   const stored = localStorage.getItem(THEME_KEY);
   if (stored) return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? DARK
-    : LIGHT;
+  return LIGHT;
 }
 
 // Reuse the value already set by the inline FOUC-prevention script if available.
@@ -18,6 +17,43 @@ let themeValue: string =
 function persist(): void {
   localStorage.setItem(THEME_KEY, themeValue);
   reflect();
+}
+
+function syncGiscusTheme(): boolean {
+  const iframe = document.querySelector<HTMLIFrameElement>(
+    "iframe.giscus-frame"
+  );
+  if (!iframe?.contentWindow) return false;
+
+  const theme = themeValue === DARK ? "noborder_dark" : "noborder_light";
+  iframe.contentWindow.postMessage(
+    { giscus: { setConfig: { theme } } },
+    GISCUS_ORIGIN
+  );
+  return true;
+}
+
+function watchGiscusTheme(): void {
+  const container = document.querySelector(".giscus");
+  if (!container) return;
+
+  const bindFrame = (): boolean => {
+    const iframe = container.querySelector<HTMLIFrameElement>(
+      "iframe.giscus-frame"
+    );
+    if (!iframe) return false;
+
+    iframe.addEventListener("load", syncGiscusTheme, { once: true });
+    syncGiscusTheme();
+    return true;
+  };
+
+  if (bindFrame()) return;
+
+  const observer = new MutationObserver(() => {
+    if (bindFrame()) observer.disconnect();
+  });
+  observer.observe(container, { childList: true, subtree: true });
 }
 
 function reflect(): void {
@@ -32,10 +68,13 @@ function reflect(): void {
   document
     .querySelector("meta[name='theme-color']")
     ?.setAttribute("content", bg);
+
+  syncGiscusTheme();
 }
 
 function setup(): void {
   reflect();
+  watchGiscusTheme();
   document.querySelector("#theme-btn")?.addEventListener("click", () => {
     themeValue = themeValue === LIGHT ? DARK : LIGHT;
     persist();
@@ -59,11 +98,3 @@ document.addEventListener("astro:before-swap", event => {
       ?.setAttribute("content", color);
   }
 });
-
-// Sync with OS-level dark/light preference changes.
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", ({ matches }) => {
-    themeValue = matches ? DARK : LIGHT;
-    persist();
-  });
