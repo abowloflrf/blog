@@ -17,6 +17,7 @@ import {
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 import { rehypeImageCaptions } from "./src/utils/rehypeImageCaptions";
+import { rehypeCodeBlocks } from "./src/utils/rehypeCodeBlocks";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
 
@@ -47,7 +48,7 @@ export default defineConfig({
         remarkToc,
         [remarkCollapse, { test: "Table of contents" }],
       ],
-      rehypePlugins: [rehypeCallouts, rehypeImageCaptions],
+      rehypePlugins: [rehypeCallouts, rehypeImageCaptions, rehypeCodeBlocks],
     }),
     shikiConfig: {
       themes: { light: "rose-pine-dawn", dark: "nord" },
