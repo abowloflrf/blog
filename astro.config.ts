@@ -72,7 +72,7 @@ export default defineConfig({
       fallbacks: ["monospace"],
       weights: [300, 400, 500, 600, 700],
       styles: ["normal", "italic"],
-      formats: ["woff", "ttf"],
+      formats: ["woff2"],
     },
     {
       name: "Caveat",
@@ -81,7 +81,7 @@ export default defineConfig({
       fallbacks: ["cursive"],
       weights: [400, 500, 600, 700],
       styles: ["normal"],
-      formats: ["woff", "ttf"],
+      formats: ["woff2"],
     },
   ],
   env: {

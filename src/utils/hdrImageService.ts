@@ -6,13 +6,14 @@ import sharp from "sharp";
 const hdrImageService: LocalImageService<SharpImageServiceConfig> = {
   ...baseService,
 
-  async validateOptions(options, imageConfig) {
+  async validateOptions(options, imageConfig, logger) {
     const isLocalJpeg =
       typeof options.src === "object" &&
       (options.src.format === "jpg" || options.src.format === "jpeg");
     const validatedOptions = await baseService.validateOptions!(
       options,
-      imageConfig
+      imageConfig,
+      logger
     );
 
     // The output filename is decided before transform(). Keep local JPEG URLs as
@@ -24,7 +25,7 @@ const hdrImageService: LocalImageService<SharpImageServiceConfig> = {
     return validatedOptions;
   },
 
-  async transform(inputBuffer, transformOptions, imageConfig) {
+  async transform(inputBuffer, transformOptions, imageConfig, logger) {
     const metadata = await sharp(inputBuffer).metadata();
 
     if (metadata.format === "jpeg" && metadata.gainMap) {
@@ -38,7 +39,8 @@ const hdrImageService: LocalImageService<SharpImageServiceConfig> = {
     return sharpImageService.transform(
       inputBuffer,
       transformOptions,
-      imageConfig
+      imageConfig,
+      logger
     );
   },
 };
