@@ -67,10 +67,15 @@ export default defineConfig({
   },
   fonts: [
     {
-      name: "Google Sans Code",
-      cssVariable: "--font-google-sans-code",
+      name: "Work Sans",
+      cssVariable: "--font-work-sans",
       provider: fontProviders.google(),
-      fallbacks: ["monospace"],
+      fallbacks: [
+        "PingFang SC",
+        "Microsoft YaHei",
+        "Noto Sans CJK SC",
+        "sans-serif",
+      ],
       weights: [300, 400, 500, 600, 700],
       styles: ["normal", "italic"],
       formats: ["woff2"],

@@ -22,78 +22,76 @@ const tocHeadings = headings.filter(
 const shouldRenderToc = tocHeadings.length > 1;
 ---
 
-{
-  shouldRenderToc && (
-    <div class="toc-peek" data-toc-peek data-pagefind-ignore>
-      <button
-        type="button"
-        class="toc-preview"
-        aria-label={t.post.openTableOfContents}
-        aria-controls="article-table-of-contents"
-        aria-expanded="false"
-        data-toc-trigger
-        data-open-label={t.post.openTableOfContents}
-        data-close-label={t.post.closeTableOfContents}
-      >
-        <span class="sr-only">{t.post.openTableOfContents}</span>
-        <span class="toc-preview-list" aria-hidden="true">
+{shouldRenderToc && (
+  <div class="toc-peek" data-toc-peek data-pagefind-ignore>
+    <button
+      type="button"
+      class="toc-preview"
+      aria-label={t.post.openTableOfContents}
+      aria-controls="article-table-of-contents"
+      aria-expanded="false"
+      data-toc-trigger
+      data-open-label={t.post.openTableOfContents}
+      data-close-label={t.post.closeTableOfContents}
+    >
+      <span class="sr-only">{t.post.openTableOfContents}</span>
+      <span class="toc-preview-list" aria-hidden="true">
+        {tocHeadings.map(heading => (
+          <span
+            class:list={[
+              "toc-preview-marker",
+              heading.depth === 3 && "toc-preview-marker--subsection",
+            ]}
+            data-toc-marker
+            data-heading-id={heading.slug}
+          />
+        ))}
+      </span>
+    </button>
+
+    <aside
+      id="article-table-of-contents"
+      class="toc"
+      aria-label={t.post.tableOfContents}
+      data-toc
+    >
+      <nav aria-label={t.post.tableOfContents}>
+        <div class="toc-actions mb-3 flex items-center">
+          <button
+            type="button"
+            class="toc-action"
+            aria-label={t.post.backToTop}
+            title={t.post.backToTop}
+            data-toc-back-to-top
+          >
+            <IconArrowNarrowUp class="size-4" />
+          </button>
+          <ReadingWidthToggle variant="toc" />
+        </div>
+
+        <ol class="toc-list border-border border-s">
           {tocHeadings.map(heading => (
-            <span
-              class:list={[
-                "toc-preview-marker",
-                heading.depth === 3 && "toc-preview-marker--subsection",
-              ]}
-              data-toc-marker
-              data-heading-id={heading.slug}
-            />
+            <li class:list={[heading.depth === 2 && "mt-1.5 first:mt-0"]}>
+              <a
+                href={`#${heading.slug}`}
+                class:list={[
+                  "toc-link text-muted-foreground hover:text-accent focus-visible:text-accent block border-s-2 border-transparent py-1.5 text-sm leading-snug no-underline transition-[color,transform,border-color] duration-150 motion-reduce:transition-none",
+                  heading.depth === 3
+                    ? "toc-link--subsection ps-7 text-[0.8125rem]"
+                    : "ps-3 font-semibold",
+                ]}
+                data-toc-link
+                data-heading-id={heading.slug}
+              >
+                {heading.text}
+              </a>
+            </li>
           ))}
-        </span>
-      </button>
-
-      <aside
-        id="article-table-of-contents"
-        class="toc"
-        aria-label={t.post.tableOfContents}
-        data-toc
-      >
-        <nav aria-label={t.post.tableOfContents}>
-          <div class="toc-actions mb-3 flex items-center">
-            <button
-              type="button"
-              class="toc-action"
-              aria-label={t.post.backToTop}
-              title={t.post.backToTop}
-              data-toc-back-to-top
-            >
-              <IconArrowNarrowUp class="size-4" />
-            </button>
-            <ReadingWidthToggle variant="toc" />
-          </div>
-
-          <ol class="toc-list border-border border-s">
-            {tocHeadings.map(heading => (
-              <li class:list={[heading.depth === 2 && "mt-1.5 first:mt-0"]}>
-                <a
-                  href={`#${heading.slug}`}
-                  class:list={[
-                    "toc-link text-muted-foreground hover:text-accent focus-visible:text-accent block border-s-2 border-transparent py-1.5 text-sm leading-snug no-underline transition-[color,transform,border-color] duration-150 motion-reduce:transition-none",
-                    heading.depth === 3
-                      ? "toc-link--subsection ps-7 text-[0.8125rem]"
-                      : "ps-3 font-semibold",
-                  ]}
-                  data-toc-link
-                  data-heading-id={heading.slug}
-                >
-                  {heading.text}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      </aside>
-    </div>
-  )
-}
+        </ol>
+      </nav>
+    </aside>
+  </div>
+)}
 
 <style>
   .toc {

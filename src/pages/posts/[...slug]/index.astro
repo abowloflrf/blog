@@ -160,7 +160,9 @@ const ogImage = ogImageUrl
     <BackToTopButton />
 
     <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8" data-pagefind-ignore>
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
+      {tags.map(tag => (
+        <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
+      ))}
     </ul>
 
     <ShareLinks />

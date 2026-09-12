@@ -26,23 +26,19 @@ const locale = Astro.currentLocale ?? config.site.lang;
       "focus-visible:no-underline focus-visible:underline-offset-0",
     ]}
   >
-    <Heading transition:name={toTransitionName(id)}>
-      {title}
-    </Heading>
+    <Heading transition:name={toTransitionName(id)}>{title}</Heading>
   </a>
   <ul class="my-1 flex flex-wrap gap-3 font-mono">
-    {
-      tags.map(tag => (
-        <li>
-          <a
-            href={getRelativeLocaleUrl(locale, `tags/${slugifyStr(tag)}/`)}
-            class="hover:text-accent text-sm decoration-dashed hover:underline"
-          >
-            # {tag}
-          </a>
-        </li>
-      ))
-    }
+    {tags.map(tag => (
+      <li>
+        <a
+          href={getRelativeLocaleUrl(locale, `tags/${slugifyStr(tag)}/`)}
+          class="hover:text-accent text-sm decoration-dashed hover:underline"
+        >
+          # {tag}
+        </a>
+      </li>
+    ))}
   </ul>
   <p>{description}</p>
   <Datetime {...props} />
